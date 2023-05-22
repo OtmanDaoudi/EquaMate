@@ -7,24 +7,30 @@ public class matrix extends JPanel {
     public int lines, columns;
     public JTextField[][] cells;
 
-    public matrix(int lines, int columns) {
+    public matrix(int lines, int columns, boolean isEnabled) {
         this.lines = lines;
         this.columns = columns;
-        this.cells = new JTextField[lines][columns];
 
-        this.setLayout(new GridLayout(lines, columns));
+        cells = new JTextField[lines][columns];
+
+        setLayout(new GridLayout(lines, columns));
 
         // append cells
         for (int line = 0; line < lines; line++) {
             for (int column = 0; column < columns; column++) {
-                cells[line][column] = new JTextField();
-                this.add(cells[line][column]);
-                cells[line][column].setEnabled(false);
+                JTextField newCell = new JTextField();
+                cells[line][column] = newCell; 
+                newCell.setHorizontalAlignment(SwingConstants.CENTER);
+                Font boldFont = newCell.getFont().deriveFont(Font.BOLD);
+                newCell.setFont(boldFont);
+                newCell.setForeground(Color.BLACK);
+                add(newCell);
+                newCell.setEnabled(isEnabled);
             }
         }
     }
-
-    public double[][] getMatrix() {
+    
+    public double[][] getValues() {
         double[][] res = new double[lines][columns];
         for (int line = 0; line < lines; line++)
             for (int column = 0; column < columns; column++)
@@ -32,7 +38,7 @@ public class matrix extends JPanel {
         return res;
     }
 
-    public void fillMatrix(double[][] values) {
+    public void setValues(double[][] values) {
         for (int line = 0; line < values.length; line++)
             for (int column = 0; column < values[line].length; column++)
                 cells[line][column].setText("" + values[line][column]);
