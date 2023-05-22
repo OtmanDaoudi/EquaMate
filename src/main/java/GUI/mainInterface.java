@@ -16,8 +16,8 @@ public class mainInterface extends JFrame
         //first tab
         JPanel tab1 = new gaussCrammer();
 
-        //second tab
-        // JPanel tab2 = new luLlt();
+        // second tab
+        JPanel tab2 = new luLlt();
 
         // //third tab
         // JPanel tab3 = new fixedPoint();
@@ -27,7 +27,7 @@ public class mainInterface extends JFrame
 
         //add tabes into the tabbed pane
         tabbedPane.addTab("Gauss/Crammer", tab1);
-        // tabbedPane.addTab("LU/LLT", tab2);
+        tabbedPane.addTab("LU/LLT", tab2);
         // tabbedPane.addTab("Fixed Point", tab3);
         // tabbedPane.addTab("Newton Raphson", tab4);
 

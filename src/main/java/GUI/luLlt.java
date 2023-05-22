@@ -1,146 +1,140 @@
-// package GUI;
+package GUI;
 
-// import GUI.Componenets.matrix;
-// import GUI.Componenets.matricesInput;
-// import GUI.Componenets.solutionHeader;
-// import Methods.linearSystems.luDecomposition;
+import GUI.Componenets.matrix;
+import Methods.linearSystems.luDecomposition;
+import Methods.utilities.matrixUtilities.MatrixUtilities;
 
-// import javax.swing.*;
-// import javax.swing.event.ChangeEvent;
-// import javax.swing.event.ChangeListener;
-// import java.awt.*;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
-// import java.util.HashMap;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
-// public class luLlt extends JPanel
-// {
-//     public matricesInput matricesInput;
-//     public JPanel matricesContainer; //a wrapper for the above component, used to preserve the old place
-//     public solutionHeader solutionMatrix;
-//     public JPanel solutionPanel;
-//     public matrix L, U;
-//     public JPanel lPanel, uPanel;
-//     public luLlt instance; 
+public class luLlt extends JPanel {
+    public matrix A, B;
+    public JPanel matricesContainer; // a wrapper for the above component, used to preserve the old place
 
-//     public luLlt()
-//     {
-//         instance = this; 
-//         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-//         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    public matrix solution;
+    public JPanel solutionPanel;
 
-//         matricesContainer = new JPanel();
-//         matricesContainer.setPreferredSize(new Dimension(0, 200)); //prevents size change while redrawing
-//         matricesContainer.setLayout(new BoxLayout(matricesContainer, BoxLayout.X_AXIS));
-//         matricesInput = new matricesInput(2);
+    public matrix L, U;
+    public JPanel lPanel, uPanel;
 
-//         matricesContainer.add(matricesInput);
+    public luLlt instance;
 
-//         this.add(matricesContainer);
+    public luLlt() {
+        instance = this;
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-//         //add dimensions chooser
-//         JPanel dimensionsChooser = new JPanel(new FlowLayout());
-//         dimensionsChooser.setPreferredSize(new Dimension(100, 30));
+        matricesContainer = new JPanel();
+        matricesContainer.setPreferredSize(new Dimension(0, 200)); // prevents size change while redrawing
+        matricesContainer.setLayout(new BoxLayout(matricesContainer, BoxLayout.X_AXIS));
+        A = new matrix(2, 2, true);
+        B = new matrix(2, 1, true);
+        matricesContainer.add(new JLabel("A: "));
+        matricesContainer.add(A);
+        matricesContainer.add(new JLabel("B: "));
+        matricesContainer.add(B);
+        add(matricesContainer);
 
-//         SpinnerNumberModel model = new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1);
-//         JSpinner spinner = new JSpinner(model);
-//         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner);
-//         spinner.setEditor(editor);
-//         // Add a change listener to the spinner to print the selected value
-//         spinner.addChangeListener(new ChangeListener() {
-//             @Override
-//             public void stateChanged(ChangeEvent e) {
-//                 //redraw matrix input
-//                 app.redraw((Integer)spinner.getValue());
-//             }
-//         });
+        // add dimensions chooser
+        JPanel dimensionsChooser = new JPanel(new FlowLayout());
+        dimensionsChooser.setPreferredSize(new Dimension(100, 30));
+        SpinnerNumberModel model = new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1);
+        JSpinner spinner = new JSpinner(model);
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner);
+        spinner.setEditor(editor);
+        spinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                // redraw matrix input
+                instance.redraw((Integer) spinner.getValue());
+            }
+        });
 
-//         dimensionsChooser.add(new JLabel("Dimensions: "));
-//         dimensionsChooser.add(spinner);
-//         this.add(dimensionsChooser);
+        dimensionsChooser.add(new JLabel("Dimensions: "));
+        dimensionsChooser.add(spinner);
+        add(dimensionsChooser);
 
-//         //solution matrix
-//         solutionPanel = new JPanel(); //wrapper
-//         solutionPanel.setLayout(new FlowLayout());
-//         solutionMatrix = new solutionHeader(2, false, "Solution : ");
-//         solutionPanel.add(solutionMatrix);
-//         this.add(solutionPanel);
+        // solution matrix
+        solutionPanel = new JPanel(); // wrapper
+        solutionPanel.setLayout(new FlowLayout());
+        solution = new matrix(1, 2, false);
+        solution.setPreferredSize(new Dimension(600, 25));
+        solutionPanel.add(new JLabel("Solution: "));
+        solutionPanel.add(solution);
+        add(solutionPanel);
 
+        // solve btn
+        JPanel pnl = new JPanel(new FlowLayout());
+        JButton solveBtn = new JButton("Solve");
+        pnl.add(solveBtn);
 
-//         //solve btn
-//         JPanel pnl = new JPanel(new FlowLayout());
-//         JButton solveBtn = new JButton("Solve");
-//         pnl.add(solveBtn);
+        this.add(pnl);
+        solveBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                solve();
+            }
+        });
 
-//         this.add(pnl);
-//         solveBtn.addActionListener(new ActionListener() {
-//             @Override
-//             public void actionPerformed(ActionEvent e) {
-//                 solve();
-//             }
-//         });
+        // L & U matrices
+        JPanel luPanel = new JPanel();
+        luPanel.setLayout(new BoxLayout(luPanel, BoxLayout.X_AXIS));
+        luPanel.add(new JLabel("L: "));
+        lPanel = new JPanel();
+        lPanel.setLayout(new BoxLayout(lPanel, BoxLayout.X_AXIS));
+        L = new matrix(2, 2, false);
+        lPanel.add(L);
+        luPanel.add(lPanel);
+        luPanel.add(new JLabel("U: "));
+        uPanel = new JPanel();
+        uPanel.setLayout(new BoxLayout(uPanel, BoxLayout.X_AXIS));
+        U = new matrix(2, 2, false);
+        uPanel.add(U);
+        luPanel.add(uPanel);
+        add(luPanel);
+        luPanel.setPreferredSize(new Dimension(100, 150));
+    }
 
-//         //L & U matrices
-//         //panel wrapper
-//         JPanel luPanel = new JPanel();
-//         luPanel.setLayout(new BoxLayout(luPanel, BoxLayout.X_AXIS));
-//         luPanel.add(new JLabel("L: "));
+    public void redraw(int newDim) {
+        matricesContainer.removeAll();
+        A = new matrix(newDim, newDim, true);
+        B = new matrix(newDim, 1, true);
+        matricesContainer.add(new JLabel("A: "));
+        matricesContainer.add(A);
+        matricesContainer.add(new JLabel("B: "));
+        matricesContainer.add(B);
 
-//         lPanel = new JPanel();
-//         lPanel.setLayout(new BoxLayout(lPanel, BoxLayout.X_AXIS));
-//         L = new matrix(2, 2);
-//         lPanel.add(L);
-//         luPanel.add(lPanel);
+        solutionPanel.remove(solution);
+        solution = new matrix(1, newDim, false);
+        solutionPanel.add(solution);
+        solution.setPreferredSize(new Dimension(600, 25));
 
-//         luPanel.add(new JLabel("U: "));
+        lPanel.remove(L);
+        L = new matrix(newDim, newDim, false);
+        lPanel.add(L);
 
-//         uPanel = new JPanel();
-//         uPanel.setLayout(new BoxLayout(uPanel, BoxLayout.X_AXIS));
-//         U = new matrix(2, 2);
-//         uPanel.add(U);
-//         luPanel.add(uPanel);
+        uPanel.remove(U);
+        U = new matrix(newDim, newDim, false);
+        uPanel.add(U);
 
-//         this.add(luPanel);
-//         luPanel.setPreferredSize(new Dimension(100, 150));
+        updateUI();
+    }
 
-//     }
+    public void solve() {
+        try {
+            HashMap<String, Object> res = luDecomposition.LU(A.getValues(), MatrixUtilities.toVector(B.getValues()));
+            solution.setValues(MatrixUtilities.toLineMatrix((double[]) res.get("result")));
 
-//     public void redraw(int newDim)
-//     {
-//         matricesContainer.remove(matricesInput);
-//         matricesInput = new matricesInput(newDim);
-//         matricesContainer.add(matricesInput);
-
-//         solutionPanel.remove(solutionMatrix);
-//         solutionMatrix = new solutionHeader(newDim, false, "Solution : ");
-//         solutionPanel.add(solutionMatrix);
-
-
-//         lPanel.remove(L);
-//         L = new matrix(newDim, newDim);
-//         lPanel.add(L);
-
-//         uPanel.remove(U);
-//         U = new matrix(newDim, newDim);
-//         uPanel.add(U);
-
-//         this.updateUI();
-//     }
-
-//     public void solve()
-//     {
-//         try
-//         {
-//             HashMap<String, Object> res = luDecomposition.LU(matricesInput.getA(), matricesInput.getB());
-//             solutionMatrix.setValues((double[]) res.get("result"));
-
-//             //set L and U
-//             L.fillMatrix((double[][]) res.get("L"));
-//             U.fillMatrix((double[][]) res.get("U"));
-//         }
-//         catch(Exception e)
-//         {
-//             JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning", JOptionPane.WARNING_MESSAGE);
-//         }
-//     }
-// }
+            // set L and U
+            L.setValues((double[][]) res.get("L"));
+            U.setValues((double[][]) res.get("U"));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+}

@@ -21,7 +21,6 @@ public class gaussCrammer extends JPanel {
 
     public JComboBox<String> method;
     public gaussCrammer instance;
-    public JSpinner dimensionSpinner;
 
     public gaussCrammer() {
         instance = this;
@@ -43,7 +42,7 @@ public class gaussCrammer extends JPanel {
         JPanel dimensionsChooser = new JPanel(new FlowLayout());
         dimensionsChooser.setPreferredSize(new Dimension(100, 30));
         SpinnerNumberModel model = new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1);
-        dimensionSpinner = new JSpinner(model);
+        JSpinner dimensionSpinner = new JSpinner(model);
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(dimensionSpinner);
         dimensionSpinner.setEditor(editor);
         // Add a change listener to the spinner to print the selected value
@@ -102,7 +101,7 @@ public class gaussCrammer extends JPanel {
         solutionPanel.add(solution);
         solution.setPreferredSize(new Dimension(600, 25));
 
-        this.updateUI();
+        updateUI();
     }
 
     public void solve() {
