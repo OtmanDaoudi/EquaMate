@@ -20,7 +20,7 @@ public class mainInterface extends JFrame
         JPanel tab2 = new luLlt();
 
         // //third tab
-        // JPanel tab3 = new fixedPoint();
+        JPanel tab3 = new fixedPoint();
 
         // //fourth tab
         // JPanel tab4 = new newtonRaphson();
@@ -28,7 +28,7 @@ public class mainInterface extends JFrame
         //add tabes into the tabbed pane
         tabbedPane.addTab("Gauss/Crammer", tab1);
         tabbedPane.addTab("LU/LLT", tab2);
-        // tabbedPane.addTab("Fixed Point", tab3);
+        tabbedPane.addTab("Fixed Point", tab3);
         // tabbedPane.addTab("Newton Raphson", tab4);
 
         this.getContentPane().add(tabbedPane, BorderLayout.CENTER);

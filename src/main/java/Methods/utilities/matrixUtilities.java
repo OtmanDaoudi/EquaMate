@@ -56,6 +56,13 @@ public class matrixUtilities {
             for(int i=0; i<matrix.length; i++) res[i] = matrix[i][0];
             return res; 
         }
+        
+        public static double[] toLineVector(double[][] matrix)
+        {
+            double[] res = new double[matrix.length];
+            for(int i=0; i<matrix[0].length; i++) res[i] = matrix[0][i];
+            return res; 
+        }
 
         //converts from line vector (double[n]) to line matrix double[1][n]
         public static double[][] toLineMatrix(double[] vector)

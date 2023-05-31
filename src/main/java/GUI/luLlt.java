@@ -22,6 +22,8 @@ public class luLlt extends JPanel {
     public matrix L, U;
     public JPanel lPanel, uPanel;
 
+    public JComboBox<String> method;
+
     public luLlt instance;
 
     public luLlt() {
@@ -68,12 +70,19 @@ public class luLlt extends JPanel {
         solutionPanel.add(solution);
         add(solutionPanel);
 
-        // solve btn
-        JPanel pnl = new JPanel(new FlowLayout());
-        JButton solveBtn = new JButton("Solve");
-        pnl.add(solveBtn);
+        // method chooser
+        JPanel methodList = new JPanel(new FlowLayout());
+        // methodList.setPreferredSize(new Dimension(0, 50));
+        methodList.add(new JLabel("Method: "));
+        String[] methods = { "LU", "LLt" };
+        method = new JComboBox<>(methods);
+        methodList.add(method, BorderLayout.CENTER);
 
-        this.add(pnl);
+        // Solve button
+        JButton solveBtn = new JButton("Solve");
+        methodList.add(solveBtn);
+
+        add(methodList);
         solveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,12 +136,18 @@ public class luLlt extends JPanel {
 
     public void solve() {
         try {
-            HashMap<String, Object> res = luDecomposition.LU(A.getValues(), MatrixUtilities.toVector(B.getValues()));
-            solution.setValues(MatrixUtilities.toLineMatrix((double[]) res.get("result")));
-
-            // set L and U
-            L.setValues((double[][]) res.get("L"));
-            U.setValues((double[][]) res.get("U"));
+            if(((String)method.getSelectedItem()).equals("LU"))
+            {
+                HashMap<String, Object> res = luDecomposition.LU(A.getValues(), MatrixUtilities.toVector(B.getValues()));
+                solution.setValues(MatrixUtilities.toLineMatrix((double[]) res.get("result")));
+                // set L and U
+                L.setValues((double[][]) res.get("L"));
+                U.setValues((double[][]) res.get("U"));
+            }
+            else
+            {
+                System.out.println("LLt");
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning", JOptionPane.WARNING_MESSAGE);
         }

@@ -15,7 +15,6 @@ public class matrix extends JPanel {
 
         setLayout(new GridLayout(lines, columns));
 
-        // append cells
         for (int line = 0; line < lines; line++) {
             for (int column = 0; column < columns; column++) {
                 JTextField newCell = new JTextField();
