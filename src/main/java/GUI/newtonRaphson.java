@@ -1,164 +1,176 @@
-// package GUI;
+package GUI;
 
-// import GUI.Componenets.equationsInput;
-// import GUI.Componenets.jacobi;
-// import GUI.Componenets.solutionHeader;
-// import net.objecthunter.exp4j.Expression;
+import GUI.Componenets.equationsInput;
+import GUI.Componenets.jacobi;
+import GUI.Componenets.matrix;
+import Methods.nonLinearSystems.newtonRaphsonMathod;
+import net.objecthunter.exp4j.Expression;
 
-// import javax.swing.*;
-// import javax.swing.event.ChangeEvent;
-// import javax.swing.event.ChangeListener;
-// import java.awt.*;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-// import static Methods.nonLinearSystems.fixedPoint.fixedPointIteration;
-// import static Methods.nonLinearSystems.newtonRaphson.newton;
+public class newtonRaphson extends JPanel {
+    public equationsInput equationsInput;
+    public JPanel equationsPanel;
 
-// public class newtonRaphson extends JPanel
-// {
-//     // public GUI.Componenets.equationsInput equationsInput;
-//     // public JPanel equationsPanel;
-//     // public solutionHeader initialSolutionHeader;
-//     // public JPanel solutionHeaderPanel;
-//     // public JSpinner iterations;
-//     // public JTextField error;
-//     // public solutionHeader solution;
-//     // public JPanel solutionPanel;
-//     // public jacobi jacobi;
-//     // public JPanel jacobiPanel;
+    public matrix initialSolution;
+    public JPanel initialSolutionPanel;
+    public JPanel initialSolutionMatrixPanel;
 
-//     // public newtonRaphson()
-//     // {
-//     //     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    public JSpinner iterations;
 
-//     //     newtonRaphson app = this;
+    public JTextField error;
 
-//     //     equationsPanel = new JPanel();
-//     //     equationsPanel.setLayout(new BoxLayout(equationsPanel, BoxLayout.Y_AXIS));
-//     //     equationsInput = new equationsInput(1);
+    public matrix solution;
+    public JPanel solutionPanel;
+    public JPanel solutionMatrixPanel;
 
-//     //     solutionHeaderPanel = new JPanel();
-//     //     solutionHeaderPanel.setLayout(new BoxLayout(solutionHeaderPanel, BoxLayout.X_AXIS));
-//     //     initialSolutionHeader = new solutionHeader(1, true, "Initial solution : ");
-//     //     solutionHeaderPanel.add(initialSolutionHeader);
+    public jacobi jacobi;
+    public JPanel jacobiPanel;
+    public JPanel jacobiMatrixPanel;
 
-//     //     solutionPanel = new JPanel();
-//     //     solutionPanel.setLayout(new BoxLayout(solutionPanel, BoxLayout.X_AXIS));
-//     //     solution = new solutionHeader(1, false, "Solution : ");
-//     //     solutionPanel.add(solution);
+    public newtonRaphson() {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-//     //     equationsPanel.add(equationsInput);
+        equationsPanel = new JPanel();
+        equationsPanel.setLayout(new BoxLayout(equationsPanel, BoxLayout.Y_AXIS));
+        equationsInput = new equationsInput(1);
+        equationsPanel.add(equationsInput);
 
-//     //     //jacobi
-//     //     jacobi = new jacobi(1);
-//     //     jacobiPanel = new JPanel();
-//     //     jacobiPanel.setLayout(new BoxLayout(jacobiPanel, BoxLayout.X_AXIS));
-//     //     jacobiPanel.add(new JLabel("Jacobi : "));
-//     //     jacobiPanel.add(jacobi);
+        initialSolutionPanel = new JPanel();
+        initialSolutionPanel.setLayout(new FlowLayout());
+        initialSolutionPanel.add(new JLabel("Initial solution : "));
+        initialSolution = new matrix(1, 2, true);
+        initialSolution.setPreferredSize(new Dimension(600, 25));
+        initialSolutionMatrixPanel = new JPanel();
+        initialSolutionMatrixPanel.setLayout(new BoxLayout(initialSolutionMatrixPanel, BoxLayout.X_AXIS));
+        initialSolutionMatrixPanel.setPreferredSize(new Dimension(600, 25));
+        initialSolutionMatrixPanel.add(initialSolution);
+        initialSolutionPanel.add(initialSolutionMatrixPanel);
 
-//     //     //add dimensions chooser
-//     //     JPanel dimensionsChooser = new JPanel(new FlowLayout());
-//     //     dimensionsChooser.setPreferredSize(new Dimension(100, 30));
+        solutionPanel = new JPanel();
+        solutionPanel.setLayout(new FlowLayout());
+        solutionPanel.add(new JLabel("Solution : "));
 
-//     //     SpinnerNumberModel model = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
-//     //     JSpinner spinner = new JSpinner(model);
-//     //     JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner);
-//     //     spinner.setEditor(editor);
-//     //     // Add a change listener to the spinner to print the selected value
-//     //     spinner.addChangeListener(new ChangeListener() {
-//     //         @Override
-//     //         public void stateChanged(ChangeEvent e) {
-//     //             //redraw matrix input
-//     //             app.redraw((Integer)spinner.getValue());
-//     //         }
-//     //     });
-//     //     dimensionsChooser.add(new JLabel("Dimension : "));
-//     //     dimensionsChooser.add(spinner);
+        solutionMatrixPanel = new JPanel();
+        solutionMatrixPanel.setLayout(new BoxLayout(solutionMatrixPanel, BoxLayout.X_AXIS));
+        solutionMatrixPanel.setPreferredSize(new Dimension(600, 25));
+        solution = new matrix(1, 2, false);
+        solutionMatrixPanel.add(solution);
+        solutionPanel.add(solutionMatrixPanel);
 
-//     //     //iterations
-//     //     JPanel iterationsPanel = new JPanel();
-//     //     iterationsPanel.setLayout(new FlowLayout());
-//     //     iterationsPanel.setPreferredSize(new Dimension(100, 30));
-//     //     iterations = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-//     //     iterationsPanel.add(new JLabel("Iterations : "));
-//     //     iterationsPanel.add(iterations);
+        // jacobi
+        jacobiPanel = new JPanel();
+        jacobiPanel.setLayout(new FlowLayout());
+        jacobiPanel.add(new JLabel("Jacobi : "));
+        jacobiMatrixPanel = new JPanel();
+        jacobiMatrixPanel.setLayout(new BoxLayout(jacobiMatrixPanel, BoxLayout.X_AXIS));
+        jacobi = new jacobi(1);
+        jacobiMatrixPanel.add(jacobi);
+        jacobiMatrixPanel.setPreferredSize(new Dimension(600, 100));
+        jacobiPanel.add(jacobiMatrixPanel);
 
-//     //     //error
-//     //     JPanel errorPanel = new JPanel(new FlowLayout());
-//     //     errorPanel.add(new JLabel("Error : "));
-//     //     error = new JTextField();
-//     //     errorPanel.add(error);
-//     //     error.setPreferredSize(new Dimension(150, 25));
+        // add dimensions chooser
+        JPanel dimensionsChooser = new JPanel(new FlowLayout());
+        dimensionsChooser.setPreferredSize(new Dimension(100, 30));
+        SpinnerNumberModel model = new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1);
+        JSpinner spinner = new JSpinner(model);
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner);
+        spinner.setEditor(editor);
+        spinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                // redraw matrix input
+                redraw((Integer) spinner.getValue());
+            }
+        });
+        dimensionsChooser.add(new JLabel("Dimension : "));
+        dimensionsChooser.add(spinner);
 
-//     //     //solve button
-//     //     JButton solve = new JButton("Solve");
-//     //     solve.addActionListener(new ActionListener() {
-//     //         @Override
-//     //         public void actionPerformed(ActionEvent e) {
-//     //             solve();
-//     //         }
-//     //     });
+        // iterations
+        JPanel iterationsPanel = new JPanel();
+        iterationsPanel.setLayout(new FlowLayout());
+        iterationsPanel.setPreferredSize(new Dimension(100, 25));
+        iterations = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        iterationsPanel.add(new JLabel("Iterations : "));
+        iterationsPanel.add(iterations);
 
-//     //     this.add(equationsPanel);
-//     //     this.add(jacobiPanel);
-//     //     this.add(dimensionsChooser);
-//     //     this.add(solutionHeaderPanel);
-//     //     this.add(iterationsPanel);
-//     //     this.add(errorPanel);
-//     //     this.add(solutionPanel);
-//     //     this.add(solve);
-//     // }
+        // error
+        JPanel errorPanel = new JPanel(new FlowLayout());
+        errorPanel.add(new JLabel("Error : "));
+        error = new JTextField();
+        error.setHorizontalAlignment(SwingConstants.CENTER);
+        Font boldFont = error.getFont().deriveFont(Font.BOLD);
+        error.setFont(boldFont);
+        error.setForeground(Color.BLACK);
+        error.setPreferredSize(new Dimension(100, 25));
+        errorPanel.add(error);
+        error.setPreferredSize(new Dimension(150, 25));
 
-//     // public void redraw(int newDimensions)
-//     // {
-//     //     this.equationsPanel.remove(this.equationsInput);
-//     //     this.equationsInput = new equationsInput(newDimensions);
-//     //     this.equationsPanel.add(this.equationsInput);
+        // solve button
+        JButton solve = new JButton("Solve");
+        solve.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                solve();
+            }
+        });
 
-//     //     solutionHeaderPanel.remove(initialSolutionHeader);
-//     //     initialSolutionHeader = new solutionHeader(newDimensions, true, "Initial solution : ");
-//     //     solutionHeaderPanel.add(initialSolutionHeader);
+        add(equationsPanel);
+        add(jacobiPanel);
+        add(dimensionsChooser);
+        add(iterationsPanel);
+        add(errorPanel);
+        add(initialSolutionPanel);
+        add(solutionPanel);
+        add(solve);
+    }
 
-//     //     solutionPanel.remove(solution);
-//     //     solution = new solutionHeader(newDimensions, false, "Solution : ");
-//     //     solutionPanel.add(solution);
+    public void redraw(int newDimensions) {
+        equationsPanel.remove(equationsInput);
+        equationsInput = new equationsInput(newDimensions);
+        equationsPanel.add(equationsInput);
 
-//     //     jacobiPanel.remove(jacobi);
-//     //     jacobi = new jacobi(newDimensions);
-//     //     jacobiPanel.add(jacobi);
+        initialSolutionMatrixPanel.removeAll();
+        initialSolution = new matrix(1, newDimensions, true);
+        initialSolutionMatrixPanel.add(initialSolution);
 
-//     //     updateUI();
-//     // }
+        solutionMatrixPanel.removeAll();
+        solution = new matrix(1, newDimensions, false);
+        solutionMatrixPanel.add(solution);
 
-//     // public void solve()
-//     // {
-//     //     //TODO: check all fields are filled
-//     //     Expression[] expressions;
-//     //     Expression[][] jacobi;
-//     //     double[] initialGuess;
-//     //     double error;
-//     //     int iterations;
-//     //     try
-//     //     {
-//     //         expressions = equationsInput.parseExpressions();
-//     //         jacobi = this.jacobi.parseExpressions();
-//     //         initialGuess = initialSolutionHeader.getValues();
-//     //         iterations = (int) this.iterations.getValue();
-//     //         error = Double.parseDouble(this.error.getText());
-//     //         try
-//     //         {
-//     //             double[] solution = newton(expressions, initialGuess, jacobi, iterations, error);
-//     //             this.solution.setValues(solution);
-//     //         }
-//     //         catch(Exception e)
-//     //         {
-//     //             JOptionPane.showMessageDialog(this, "Newton-raphson method diverges for this config");
-//     //         }
-//     //     }
-//     //     catch(Exception e)
-//     //     {
-//     //         JOptionPane.showMessageDialog(this, "invalid input");
-//     //     }
-//     // }
-// }
+        jacobiMatrixPanel.removeAll();
+        jacobi = new jacobi(newDimensions);
+        jacobiMatrixPanel.add(jacobi);
+
+        updateUI();
+    }
+
+    public void solve() {
+        Expression[] expressions;
+        Expression[][] jacobi;
+        double[] initialGuess;
+        double error;
+        int iterations;
+        try {
+            initialGuess = initialSolution.getValuesAsLineMatrix();
+            expressions = equationsInput.parseExpressions();
+            jacobi = this.jacobi.parseExpressions();
+            iterations = (int) this.iterations.getValue();
+            error = Double.parseDouble(this.error.getText());
+            try {
+                double[] solution = newtonRaphsonMathod.newton(expressions, initialGuess, jacobi, iterations, error);
+                this.solution.setValuesAsLineMatrix(solution);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Newton-raphson method diverges for this config");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "invalid input");
+        }
+    }
+}

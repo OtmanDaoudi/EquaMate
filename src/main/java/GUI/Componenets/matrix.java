@@ -18,7 +18,7 @@ public class matrix extends JPanel {
         for (int line = 0; line < lines; line++) {
             for (int column = 0; column < columns; column++) {
                 JTextField newCell = new JTextField();
-                cells[line][column] = newCell; 
+                cells[line][column] = newCell;
                 newCell.setHorizontalAlignment(SwingConstants.CENTER);
                 Font boldFont = newCell.getFont().deriveFont(Font.BOLD);
                 newCell.setFont(boldFont);
@@ -28,7 +28,7 @@ public class matrix extends JPanel {
             }
         }
     }
-    
+
     public double[][] getValues() {
         double[][] res = new double[lines][columns];
         for (int line = 0; line < lines; line++)
@@ -41,5 +41,17 @@ public class matrix extends JPanel {
         for (int line = 0; line < values.length; line++)
             for (int column = 0; column < values[line].length; column++)
                 cells[line][column].setText("" + values[line][column]);
+    }
+
+    public double[] getValuesAsLineMatrix() {
+        double[] res = new double[columns];
+        for (int i = 0; i < columns; i++)
+            res[i] = Double.parseDouble(cells[0][i].getText());
+        return res;
+    }
+
+    public void setValuesAsLineMatrix(double[] matrix) {
+        for (int column = 0; column < columns; column++)
+            cells[0][column].setText("" + matrix[column]);
     }
 }

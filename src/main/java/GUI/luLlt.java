@@ -136,16 +136,14 @@ public class luLlt extends JPanel {
 
     public void solve() {
         try {
-            if(((String)method.getSelectedItem()).equals("LU"))
-            {
-                HashMap<String, Object> res = luDecomposition.LU(A.getValues(), MatrixUtilities.toVector(B.getValues()));
+            if (((String) method.getSelectedItem()).equals("LU")) {
+                HashMap<String, Object> res = luDecomposition.LU(A.getValues(),
+                        MatrixUtilities.toVector(B.getValues()));
                 solution.setValues(MatrixUtilities.toLineMatrix((double[]) res.get("result")));
                 // set L and U
                 L.setValues((double[][]) res.get("L"));
                 U.setValues((double[][]) res.get("U"));
-            }
-            else
-            {
+            } else {
                 System.out.println("LLt");
             }
         } catch (Exception e) {

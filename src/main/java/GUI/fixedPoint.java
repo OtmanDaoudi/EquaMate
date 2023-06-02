@@ -136,7 +136,8 @@ public class fixedPoint extends JPanel {
             }
             iterations = (int) this.iterations.getValue();
             error = Double.parseDouble(this.error.getText());
-            for(int i=0; i<initialGuess.length; i++) System.out.print(initialGuess[i]+" ");
+            for (int i = 0; i < initialGuess.length; i++)
+                System.out.print(initialGuess[i] + " ");
             System.out.println("");
             try {
                 double[] solution = fixedPointIteration(expressions, initialGuess, iterations, error);

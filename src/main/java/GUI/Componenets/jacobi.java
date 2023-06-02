@@ -14,15 +14,21 @@ public class jacobi extends JPanel
     public jacobi(int dimension)
     {
         this.dimension = dimension;
-        this.cells = new JTextField[dimension][dimension];
+        cells = new JTextField[dimension][dimension];
 
-        this.setLayout(new GridLayout(dimension, dimension));
+        setLayout(new GridLayout(dimension, dimension));
         for(int i=0; i<dimension; i++)
         {
             for(int j=0; j<dimension; j++)
             {
-                cells[i][j] = new JTextField();
-                this.add(cells[i][j]);
+                JTextField inpt = new JTextField();
+                cells[i][j] = inpt; 
+                inpt.setHorizontalAlignment(SwingConstants.CENTER);
+                Font boldFont = inpt.getFont().deriveFont(Font.BOLD);
+                inpt.setFont(boldFont);
+                inpt.setForeground(Color.BLACK);
+                
+                add(cells[i][j]);
             }
         }
     }
