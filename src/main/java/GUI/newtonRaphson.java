@@ -158,7 +158,7 @@ public class newtonRaphson extends JPanel {
         double error;
         int iterations;
         try {
-            initialGuess = initialSolution.getValuesAsLineMatrix();
+            initialGuess = initialSolution.getValuesAsLineVector();
             expressions = equationsInput.parseExpressions();
             jacobi = this.jacobi.parseExpressions();
             iterations = (int) this.iterations.getValue();

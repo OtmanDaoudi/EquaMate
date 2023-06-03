@@ -8,6 +8,11 @@ public class matrixUtilities {
     public static class MatrixUtilities
     {
         public static double eliminateEntry(double[][] A, double[] B, int line, int column) {
+            //0 pivot case
+            if(A[column][column] == 0)
+            {
+                
+            }
             double multiplier = -A[line][column] / A[column][column];
 
             for (int i = 0; i < A.length; i++) {

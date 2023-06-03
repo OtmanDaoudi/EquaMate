@@ -2,7 +2,6 @@ package GUI;
 
 import GUI.Componenets.matrix;
 import Methods.linearSystems.luDecomposition;
-import Methods.utilities.matrixUtilities.MatrixUtilities;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -137,9 +136,8 @@ public class luLlt extends JPanel {
     public void solve() {
         try {
             if (((String) method.getSelectedItem()).equals("LU")) {
-                HashMap<String, Object> res = luDecomposition.LU(A.getValues(),
-                        MatrixUtilities.toVector(B.getValues()));
-                solution.setValues(MatrixUtilities.toLineMatrix((double[]) res.get("result")));
+                HashMap<String, Object> res = luDecomposition.LU(A.getValues(), B.getValuesAsColumnVector());
+                solution.setValuesAsLineMatrix((double[]) res.get("result"));
                 // set L and U
                 L.setValues((double[][]) res.get("L"));
                 U.setValues((double[][]) res.get("U"));

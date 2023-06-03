@@ -43,15 +43,29 @@ public class matrix extends JPanel {
                 cells[line][column].setText("" + values[line][column]);
     }
 
-    public double[] getValuesAsLineMatrix() {
+    public double[] getValuesAsLineVector() {
         double[] res = new double[columns];
         for (int i = 0; i < columns; i++)
             res[i] = Double.parseDouble(cells[0][i].getText());
         return res;
     }
 
+    public double[] getValuesAsColumnVector() {
+        double[] res = new double[lines];
+        for (int i = 0; i < lines; i++)
+            res[i] = Double.parseDouble(cells[i][0].getText());
+        return res;
+    }
+
     public void setValuesAsLineMatrix(double[] matrix) {
         for (int column = 0; column < columns; column++)
             cells[0][column].setText("" + matrix[column]);
+    }
+
+    public static double[][] getValuesAsLineMatrix(double[] vector) {
+        double[][] res = new double[1][vector.length];
+        for (int i = 0; i < vector.length; i++)
+            res[0][i] = vector[i];
+        return res;
     }
 }

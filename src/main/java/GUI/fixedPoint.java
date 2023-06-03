@@ -4,7 +4,6 @@ import net.objecthunter.exp4j.Expression;
 
 import GUI.Componenets.equationsInput;
 import GUI.Componenets.matrix;
-import Methods.utilities.matrixUtilities.MatrixUtilities;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -130,7 +129,7 @@ public class fixedPoint extends JPanel {
         int iterations;
         try {
             expressions = equationsInput.parseExpressions();
-            initialGuess = MatrixUtilities.toLineVector(initialSolutionMatrix.getValues());
+            initialGuess = initialSolutionMatrix.getValuesAsLineVector();
             for (double num : initialGuess) {
                 System.out.println(num);
             }
@@ -141,7 +140,7 @@ public class fixedPoint extends JPanel {
             System.out.println("");
             try {
                 double[] solution = fixedPointIteration(expressions, initialGuess, iterations, error);
-                this.solution.setValues(MatrixUtilities.toLineMatrix(solution));
+                this.solution.setValuesAsLineMatrix(solution);;
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Fixed Point method diverges for this config");
             }

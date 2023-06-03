@@ -3,7 +3,6 @@ package GUI;
 import GUI.Componenets.matrix;
 import Methods.linearSystems.crammer;
 import Methods.linearSystems.gaussianElimination;
-import Methods.utilities.matrixUtilities.MatrixUtilities;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -108,16 +107,17 @@ public class gaussCrammer extends JPanel {
         try {
             double[] res;
             if (((String) method.getSelectedItem()).equals("Gauss"))
-                res = gaussianElimination.gaussianEliminationMathod(A.getValues(),
-                        MatrixUtilities.toVector(B.getValues()));
+                res = gaussianElimination.gaussianEliminationMathod(A.getValues(), B.getValuesAsColumnVector());
             else
-                res = crammer.crammerMethod(A.getValues(), MatrixUtilities.toVector(B.getValues()));
-            solution.setValues(MatrixUtilities.toLineMatrix(res));
+                res = crammer.crammerMethod(A.getValues(), B.getValuesAsColumnVector());
+            solution.setValuesAsLineMatrix(res);
+            ;
         } catch (Exception e) {
-            if(e.getMessage().equals("Determinant error")) 
+            if (e.getMessage().equals("Determinant error"))
                 JOptionPane.showMessageDialog(this, "Warning: det(A) = 0", "Warning", JOptionPane.WARNING_MESSAGE);
             else
-                JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning",
+                        JOptionPane.WARNING_MESSAGE);
         }
     }
 }
