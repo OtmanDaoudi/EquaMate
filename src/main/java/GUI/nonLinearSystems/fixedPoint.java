@@ -1,4 +1,4 @@
-package GUI;
+package GUI.nonLinearSystems;
 
 import net.objecthunter.exp4j.Expression;
 

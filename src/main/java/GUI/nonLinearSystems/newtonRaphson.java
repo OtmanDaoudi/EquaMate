@@ -1,4 +1,4 @@
-package GUI;
+package GUI.nonLinearSystems;
 
 import GUI.Componenets.equationsInput;
 import GUI.Componenets.jacobi;
@@ -110,7 +110,6 @@ public class newtonRaphson extends JPanel {
         error.setForeground(Color.BLACK);
         error.setPreferredSize(new Dimension(100, 25));
         errorPanel.add(error);
-        error.setPreferredSize(new Dimension(150, 25));
 
         // solve button
         JButton solve = new JButton("Solve");

@@ -1,8 +1,7 @@
-package GUI;
+package GUI.linearSystems;
 
 import GUI.Componenets.matrix;
-import Methods.linearSystems.crammer;
-import Methods.linearSystems.gaussianElimination;
+import Methods.linearSystems.luDecomposition;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -10,21 +9,26 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
-public class gaussCrammer extends JPanel {
+public class luLlt extends JPanel {
     public matrix A, B;
     public JPanel matricesContainer; // a wrapper for the above component, used to preserve the old place
 
     public matrix solution;
     public JPanel solutionPanel;
 
-    public JComboBox<String> method;
-    public gaussCrammer instance;
+    public matrix L, U;
+    public JPanel lPanel, uPanel;
 
-    public gaussCrammer() {
+    public JComboBox<String> method;
+
+    public luLlt instance;
+
+    public luLlt() {
         instance = this;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // add padding
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         matricesContainer = new JPanel();
         matricesContainer.setPreferredSize(new Dimension(0, 200)); // prevents size change while redrawing
@@ -33,7 +37,7 @@ public class gaussCrammer extends JPanel {
         B = new matrix(2, 1, true);
         matricesContainer.add(new JLabel("A: "));
         matricesContainer.add(A);
-        matricesContainer.add(new JLabel(" B: "));
+        matricesContainer.add(new JLabel("B: "));
         matricesContainer.add(B);
         add(matricesContainer);
 
@@ -41,19 +45,19 @@ public class gaussCrammer extends JPanel {
         JPanel dimensionsChooser = new JPanel(new FlowLayout());
         dimensionsChooser.setPreferredSize(new Dimension(100, 30));
         SpinnerNumberModel model = new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1);
-        JSpinner dimensionSpinner = new JSpinner(model);
-        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(dimensionSpinner);
-        dimensionSpinner.setEditor(editor);
-        // Add a change listener to the spinner to print the selected value
-        dimensionSpinner.addChangeListener(new ChangeListener() {
+        JSpinner spinner = new JSpinner(model);
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner);
+        spinner.setEditor(editor);
+        spinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                // redraw input matrices
-                instance.redraw((Integer) dimensionSpinner.getValue());
+                // redraw matrix input
+                instance.redraw((Integer) spinner.getValue());
             }
         });
+
         dimensionsChooser.add(new JLabel("Dimensions: "));
-        dimensionsChooser.add(dimensionSpinner);
+        dimensionsChooser.add(spinner);
         add(dimensionsChooser);
 
         // solution matrix
@@ -67,9 +71,9 @@ public class gaussCrammer extends JPanel {
 
         // method chooser
         JPanel methodList = new JPanel(new FlowLayout());
-        methodList.setPreferredSize(new Dimension(0, 30));
+        // methodList.setPreferredSize(new Dimension(0, 50));
         methodList.add(new JLabel("Method: "));
-        String[] methods = { "Gauss", "Crammer" };
+        String[] methods = { "LU", "LLt" };
         method = new JComboBox<>(methods);
         methodList.add(method, BorderLayout.CENTER);
 
@@ -84,6 +88,24 @@ public class gaussCrammer extends JPanel {
                 solve();
             }
         });
+
+        // L & U matrices
+        JPanel luPanel = new JPanel();
+        luPanel.setLayout(new BoxLayout(luPanel, BoxLayout.X_AXIS));
+        luPanel.add(new JLabel("L: "));
+        lPanel = new JPanel();
+        lPanel.setLayout(new BoxLayout(lPanel, BoxLayout.X_AXIS));
+        L = new matrix(2, 2, false);
+        lPanel.add(L);
+        luPanel.add(lPanel);
+        luPanel.add(new JLabel("U: "));
+        uPanel = new JPanel();
+        uPanel.setLayout(new BoxLayout(uPanel, BoxLayout.X_AXIS));
+        U = new matrix(2, 2, false);
+        uPanel.add(U);
+        luPanel.add(uPanel);
+        add(luPanel);
+        luPanel.setPreferredSize(new Dimension(100, 150));
     }
 
     public void redraw(int newDim) {
@@ -100,24 +122,30 @@ public class gaussCrammer extends JPanel {
         solutionPanel.add(solution);
         solution.setPreferredSize(new Dimension(600, 25));
 
+        lPanel.remove(L);
+        L = new matrix(newDim, newDim, false);
+        lPanel.add(L);
+
+        uPanel.remove(U);
+        U = new matrix(newDim, newDim, false);
+        uPanel.add(U);
+
         updateUI();
     }
 
     public void solve() {
         try {
-            double[] res;
-            if (((String) method.getSelectedItem()).equals("Gauss"))
-                res = gaussianElimination.gaussianEliminationMathod(A.getValues(), B.getValuesAsColumnVector());
-            else
-                res = crammer.crammerMethod(A.getValues(), B.getValuesAsColumnVector());
-            solution.setValuesAsLineMatrix(res);
-            ;
+            if (((String) method.getSelectedItem()).equals("LU")) {
+                HashMap<String, Object> res = luDecomposition.LU(A.getValues(), B.getValuesAsColumnVector());
+                solution.setValuesAsLineMatrix((double[]) res.get("result"));
+                // set L and U
+                L.setValues((double[][]) res.get("L"));
+                U.setValues((double[][]) res.get("U"));
+            } else {
+                System.out.println("LLt");
+            }
         } catch (Exception e) {
-            if (e.getMessage().equals("Determinant error"))
-                JOptionPane.showMessageDialog(this, "Warning: det(A) = 0", "Warning", JOptionPane.WARNING_MESSAGE);
-            else
-                JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning",
-                        JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Warning: Check your input", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 }
