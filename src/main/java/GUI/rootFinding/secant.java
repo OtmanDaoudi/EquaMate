@@ -4,11 +4,25 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.DefaultXYDataset;
+
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Ellipse2D;
 
 public class secant extends JPanel {
     public JTextField function = new JTextField();
@@ -20,7 +34,7 @@ public class secant extends JPanel {
     public JButton solve = new JButton("Solve");
 
     public secant() {
-        setBorder(BorderFactory.createEmptyBorder(100, 10, 100, 10));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         // font + align center
@@ -95,13 +109,81 @@ public class secant extends JPanel {
         panel1.add(functionPanel);
         panel1.add(intervalInput);
         panel1.add(iterationsInput);
+        panel1.add(errorInput);
         panel1.add(solutionOuput);
         panel1.add(solve);
 
         add(panel1);
 
-        //setting up graphing panel
-        
-        add(panel2);
+        solve.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                solve();
+            }
+        });
+
+        // Create a dataset to hold the points on the x-axis
+        DefaultXYDataset dataset = new DefaultXYDataset();
+
+        // Add data points to the dataset
+        double[] xValues = { -5, 0, 5 };
+        double[] yValues = { 0, 0, 0 };
+        double[][] xyData = { xValues, yValues };
+        dataset.addSeries("Points", xyData);
+
+        // Create a chart with the function plot and x-axis points
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                "Function Plot", // Chart title
+                "X", // X-axis label
+                "Y", // Y-axis label
+                dataset, // Dataset
+                PlotOrientation.VERTICAL,
+                false, // Include legend
+                true, // Include tooltips
+                false // Include URLs
+        );
+
+        // Customize the plot
+        XYPlot plot = chart.getXYPlot();
+
+        // Highlight specific points on the x-axis
+        plot.getRenderer().setSeriesPaint(0, java.awt.Color.RED);
+        plot.getRenderer().setSeriesShape(0, new Ellipse2D.Double(-1, -1, 2, 2));
+
+        // Set the range for the x-axis
+        plot.getRangeAxis().setRange(-1, 1);
+
+        // Create a ChartPanel to display the chart
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(500, 100));
+        add(chartPanel);
+    }
+
+    public void solve() {
+        //check input fields
+        double x0_, x1_, error_;
+        int iterations_; 
+        try
+        {
+            x0_ = Double.parseDouble(x0.getText());
+            x1_ = Double.parseDouble(x1.getText());
+            error_ = Double.parseDouble(error.getText());
+            Expression f = new ExpressionBuilder(function.getText()).variable("x1").build(); 
+    
+            iterations_ = Integer.parseInt(iterations.getText());
+            try {
+                double res = Methods.rootFinding.secant.Secant(f, x0_, x1_, iterations_, error_);    
+                solution.setText(res+"");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Secant diverges for this configuration.");
+            }
+        }catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(this, "invalid input.");
+        }
+    }
+
+    public void plotResult() {
+
     }
 }
