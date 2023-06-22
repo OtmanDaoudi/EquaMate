@@ -15,6 +15,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -22,7 +24,6 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Ellipse2D;
 
 public class secant extends JPanel {
     public JTextField function = new JTextField();
@@ -32,6 +33,7 @@ public class secant extends JPanel {
     public JTextField error = new JTextField();
     public JTextField solution = new JTextField();
     public JButton solve = new JButton("Solve");
+    public ChartPanel chartPanel;
 
     public secant() {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -73,7 +75,7 @@ public class secant extends JPanel {
         // function input
         JPanel functionPanel = new JPanel();
         functionPanel.setLayout(new FlowLayout());
-        functionPanel.add(new JLabel("F(x1): "));
+        functionPanel.add(new JLabel("F(x): "));
         functionPanel.add(function);
         function.setPreferredSize(new Dimension(400, 30));
 
@@ -122,68 +124,111 @@ public class secant extends JPanel {
             }
         });
 
-        // Create a dataset to hold the points on the x-axis
-        DefaultXYDataset dataset = new DefaultXYDataset();
-
-        // Add data points to the dataset
-        double[] xValues = { -5, 0, 5 };
-        double[] yValues = { 0, 0, 0 };
-        double[][] xyData = { xValues, yValues };
-        dataset.addSeries("Points", xyData);
-
         // Create a chart with the function plot and x-axis points
         JFreeChart chart = ChartFactory.createXYLineChart(
                 "Function Plot", // Chart title
                 "X", // X-axis label
                 "Y", // Y-axis label
-                dataset, // Dataset
+                null, // Dataset
                 PlotOrientation.VERTICAL,
                 false, // Include legend
                 true, // Include tooltips
                 false // Include URLs
         );
 
-        // Customize the plot
-        XYPlot plot = chart.getXYPlot();
-
-        // Highlight specific points on the x-axis
-        plot.getRenderer().setSeriesPaint(0, java.awt.Color.RED);
-        plot.getRenderer().setSeriesShape(0, new Ellipse2D.Double(-1, -1, 2, 2));
-
-        // Set the range for the x-axis
-        plot.getRangeAxis().setRange(-1, 1);
-
         // Create a ChartPanel to display the chart
-        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(500, 100));
         add(chartPanel);
     }
 
     public void solve() {
-        //check input fields
+        // check input fields
         double x0_, x1_, error_;
-        int iterations_; 
-        try
-        {
+        int iterations_;
+        try {
             x0_ = Double.parseDouble(x0.getText());
             x1_ = Double.parseDouble(x1.getText());
             error_ = Double.parseDouble(error.getText());
-            Expression f = new ExpressionBuilder(function.getText()).variable("x1").build(); 
-    
+            Expression f = new ExpressionBuilder(function.getText()).variable("x").build();
             iterations_ = Integer.parseInt(iterations.getText());
+
             try {
-                double res = Methods.rootFinding.secant.Secant(f, x0_, x1_, iterations_, error_);    
-                solution.setText(res+"");
+                if (f.setVariable("x", x0_).evaluate() * f.setVariable("x", x1_).evaluate() > 0) {
+                    JOptionPane.showMessageDialog(this, "the function has no roots in the specified interval.");
+                    return;
+                }
+                double res = Methods.rootFinding.secant.Secant(f, x0_, x1_, iterations_, error_);
+                solution.setText(res + "");
+                try {
+                    plotChart(f, x0_, x1_, res);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error drawing the chart");
+                }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Secant diverges for this configuration.");
             }
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "invalid input.");
         }
     }
 
-    public void plotResult() {
+    public void plotChart(Expression f, double a, double b, double root) {
+        // Create dataset for the function plot
+        DefaultXYDataset dataset = new DefaultXYDataset();
+        double[][] functionData = calculateFunctionData(f, a - 5, b + 5);
+        dataset.addSeries("Function", functionData);
 
+        // Create dataset for the highlighted points
+        XYSeriesCollection seriesCollection = new XYSeriesCollection();
+        XYSeries series = new XYSeries("Points");
+        series.add(a, 0);
+        series.add(b, 0);
+        series.add(root, 0);
+        seriesCollection.addSeries(series);
+
+        // Create the chart
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                "Function Plot",
+                "X",
+                "Y",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false);
+
+        // Customize the chart
+        XYPlot plot = chart.getXYPlot();
+        plot.setDataset(1, seriesCollection);
+        plot.mapDatasetToRangeAxis(1, 0);
+        plot.setRenderer(1, new org.jfree.chart.renderer.xy.XYLineAndShapeRenderer());
+        plot.getDomainAxis().setRange(a - 1, b + 1);
+        plot.getRangeAxis().setRange(-10, 10);
+
+        // Show y-axis (x=0)
+        plot.setDomainZeroBaselineVisible(true);
+
+        // Display the chart in a Swing window
+        chartPanel.setChart(chart);
+        chartPanel.restoreAutoRangeBounds();
     }
+
+    private double[][] calculateFunctionData(Expression f, double a, double b) {
+        int numPoints = 100; // Number of data points
+        double[][] data = new double[2][numPoints];
+
+        double step = (b - a) / (numPoints - 1);
+        for (int i = 0; i < numPoints; i++) {
+            double x = a + (i * step);
+            double y = f.setVariable("x", x).evaluate(); // Use your function calculation method
+            if (x < a || x > b) {
+                y = Double.NaN; // Set y-value to NaN (not-a-number) if x is outside the interval
+            }
+            data[0][i] = x;
+            data[1][i] = y;
+        }
+        return data;
+    }
+
 }
