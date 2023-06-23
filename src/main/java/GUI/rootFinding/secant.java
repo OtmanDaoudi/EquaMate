@@ -126,7 +126,7 @@ public class secant extends JPanel {
 
         // Create a chart with the function plot and x-axis points
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "Function Plot", // Chart title
+                null, // Chart title
                 "X", // X-axis label
                 "Y", // Y-axis label
                 null, // Dataset
@@ -155,7 +155,7 @@ public class secant extends JPanel {
 
             try {
                 if (f.setVariable("x", x0_).evaluate() * f.setVariable("x", x1_).evaluate() > 0) {
-                    JOptionPane.showMessageDialog(this, "the function has no roots in the specified interval.");
+                    JOptionPane.showMessageDialog(this, "the function has no roots in the specified interval or is not strictly monotonic.");
                     return;
                 }
                 double res = Methods.rootFinding.secant.Secant(f, x0_, x1_, iterations_, error_);
@@ -189,7 +189,7 @@ public class secant extends JPanel {
 
         // Create the chart
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "Function Plot",
+                null,
                 "X",
                 "Y",
                 dataset,
