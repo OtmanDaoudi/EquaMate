@@ -1,7 +1,7 @@
 # EquaMate
 A minimal desktop application for solving mathematical problems using numerical methods.
 
-## available methods
+## Available methods
 ✅ Linear systems
 1.  Gauss
 2.  Crammer
